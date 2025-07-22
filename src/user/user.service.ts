@@ -1,38 +1,46 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { IUser } from "./user.interface";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateTodoDto } from "./dto/update-user.dto";
+import { InjectModel } from "@nestjs/mongoose";
+import { User } from "./schema/user.schema";
+import { Model } from "mongoose";
 
 @Injectable()
 export class UserService {
-  users: IUser[] = [];
+  users: CreateUserDto[] = [];
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  addUser(user: IUser) {
-    this.users.push(user);
-    return { message: "user added" };
+  async addUser(user: CreateUserDto) {
+    const newUser = await this.userModel.create(user);
+    return { message: "user added", data: newUser };
   }
 
-  addManyUsers(users: IUser[]) {
-    this.users.push(...users);
-    return { message: "many Users added", data: this.users };
+  // addManyUsers(users: CreateUserDto[]) {
+  //   this.users.push(...users);
+  //   return { message: "many Users added", data: this.users };
+  // }
+
+  async getAll() {
+    return await this.userModel.find();
   }
 
-  getAll() {
-    return this.users;
-  }
-
-  deleteById(id) {
-    this.users = this.users.filter((u) => u.id != id);
+  async deleteById(id) {
+    await this.userModel.findByIdAndDelete(id);
     return { messsage: "deleted Successfully" };
   }
 
-  getUserbyId(id: number) {
-    const user = this.users.find((user) => user.id == id);
+  async getUserbyId(id) {
+    const user = this.userModel.findById(id);
     if (!user) throw new NotFoundException("User not Found");
     return user;
   }
-  updateUser(id: number, user: IUser) {
-    const index = this.users.findIndex((u) => u.id == id);
-    if (index === -1) throw new NotFoundException("User not Found");
-    this.users[index] = { ...this.users[index], ...user };
-    return { message: "User updated", data: this.users[index] };
+  async updateUser(id, updateUserDto: UpdateTodoDto) {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      updateUserDto,
+      { new: true, runValidators: true },
+    );
+    if (!updatedUser) throw new NotFoundException("User not Found");
+    return { message: "Updated Successfully", data: updatedUser };
   }
 }

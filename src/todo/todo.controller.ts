@@ -16,27 +16,27 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post("")
-  CreateTodoDto(@Body() todo: ITodo) {
-    return this.todoService.CreateTodoDto(todo);
+  createTodo(@Body() todo: CreateTodoDto) {
+    return this.todoService.createNewTodo(todo);
   }
 
   @Get("")
   getAll() {
-    return this.todoService.getAll();
+    return this.todoService.getAllTodos();
   }
 
   @Get(":id")
   findOne(@Param("id") id: string) {
-    return this.todoService.getTodoById(+id);
+    return this.todoService.getTodoById(id);
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateTodoDto: ITodo) {
-    return this.todoService.UpdateTodoDto(+id, updateTodoDto);
+  update(@Param("id") id: string, @Body() updateTodoDto: UpdateTodoDto) {
+    return this.todoService.updateTodo(id, updateTodoDto);
   }
 
   @Delete(":id")
   remove(@Param("id") id: string) {
-    return this.todoService.deleteById(+id);
+    return this.todoService.deleteTodo(id);
   }
 }
