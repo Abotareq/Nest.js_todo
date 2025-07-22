@@ -29,4 +29,10 @@ export class UserService {
     if (!user) throw new NotFoundException("User not Found");
     return user;
   }
+  updateUser(id: number, user: IUser) {
+    const index = this.users.findIndex((u) => u.id == id);
+    if (index === -1) throw new NotFoundException("User not Found");
+    this.users[index] = { ...this.users[index], ...user };
+    return { message: "User updated", data: this.users[index] };
+  }
 }

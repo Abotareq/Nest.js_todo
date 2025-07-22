@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
@@ -38,5 +39,9 @@ export class UserController {
   @Get(":id")
   getUserbyId(@Param("id") id) {
     return this.userService.getUserbyId(+id);
+  }
+  @Patch(":id")
+  updateUser(@Param("id") id, @Body() user: IUser) {
+    return this.userService.updateUser(+id, user);
   }
 }
